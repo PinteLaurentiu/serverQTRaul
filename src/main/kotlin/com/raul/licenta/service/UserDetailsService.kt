@@ -35,10 +35,13 @@ class UserDetailsService(
     private fun getUserRoles(user: User): List<Role> {
         val roles: ArrayList<Role> = ArrayList()
         for (role in user.userRoles) {
-            if (!roles.contains(Role.User) && role.role in Role.equivalentRoles) {
+            if (!roles.contains(Role.User) && (role.role in Role.equivalentRoles)) {
                 roles.add(Role.User)
             } else if (role.role !in Role.equivalentRoles) {
                 roles.add(role.role)
+            }
+            if (roles.contains(Role.Admin) && !roles.contains(Role.User)) {
+                roles.add(Role.User)
             }
         }
         return roles
