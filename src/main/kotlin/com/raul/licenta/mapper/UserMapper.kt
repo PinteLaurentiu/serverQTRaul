@@ -1,11 +1,9 @@
 package com.raul.licenta.mapper
 
+import com.raul.licenta.dto.OwnerDto
 import com.raul.licenta.dto.RegisterDto
 import com.raul.licenta.dto.UserDto
-import com.raul.licenta.model.Activation
-import com.raul.licenta.model.Role
-import com.raul.licenta.model.User
-import com.raul.licenta.model.UserRole
+import com.raul.licenta.model.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
@@ -21,6 +19,7 @@ class UserMapper(
                 dto.email,
                 dto.name,
                 hashSetOf(UserRole(0, Role.Unassigned)),
+                mutableSetOf(),
                 Activation(0, "", true))
         user.userRoles.first().user = user
         user.activation.user = user
@@ -33,4 +32,6 @@ class UserMapper(
             model.userRoles.map { it.role })
 
     fun getUsers(allUsers: List<User>): List<UserDto> = allUsers.map { getUser(it) }
+
+    fun getOwner(user: User) = OwnerDto(user.id, user.name)
 }

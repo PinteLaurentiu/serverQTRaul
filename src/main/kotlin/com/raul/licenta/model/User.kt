@@ -23,7 +23,12 @@ data class User(
         @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
         var userRoles: MutableSet<UserRole> = HashSet(),
 
+        @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL])
+        var images: MutableSet<Image> = HashSet(),
+
         @OneToOne(cascade = [CascadeType.ALL])
         @JoinColumn(name = "activation_id", referencedColumnName = "id")
         var activation: Activation = Activation()
+
+
 )

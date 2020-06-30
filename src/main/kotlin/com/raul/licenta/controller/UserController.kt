@@ -1,5 +1,6 @@
 package com.raul.licenta.controller
 
+import com.raul.licenta.dto.OwnerDto
 import com.raul.licenta.dto.RegisterDto
 import com.raul.licenta.dto.UserDto
 import com.raul.licenta.mapper.UserMapper
@@ -18,10 +19,6 @@ class UserController(
         @Autowired
         private val userMapper: UserMapper
 ) {
-//    @GetMapping("/authenticated/")
-//    fun auto() : ResponseEntity<List<User>> {
-//        return ResponseEntity(userService.getAllUsers(), HttpStatus.OK)
-//    }
     @PostMapping("/unauthenticated/user")
     fun register(@RequestBody dto: RegisterDto) {
         userService.register(userMapper.getUser(dto))
@@ -40,4 +37,8 @@ class UserController(
         userService.delete(id)
     }
 
+    @GetMapping("/authenticated/user/image/{id}")
+    fun getOwnerOfImage(@PathVariable id: Long) : OwnerDto {
+        return userMapper.getOwner(userService.getOwnerOfImage(id))
+    }
 }
