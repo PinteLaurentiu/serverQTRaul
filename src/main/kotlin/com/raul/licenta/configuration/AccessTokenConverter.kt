@@ -1,6 +1,8 @@
 package com.raul.licenta.configuration
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.raul.licenta.exception.ServerBaseException
+import com.raul.licenta.model.ExceptionMessage
 import com.raul.licenta.model.UserDetails
 import com.raul.licenta.model.UserDetailsData
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -14,7 +16,7 @@ class AccessTokenConverter : JwtAccessTokenConverter() {
         val oAuth2Authentication = super.extractAuthentication(claims)
         val authentication: Authentication = oAuth2Authentication.userAuthentication ?: return oAuth2Authentication
         val userDetailsMap = claims[UserDetailsData::class.simpleName] as? Map<*, *> ?:
-            throw InvalidTokenException("JWT has invalid format!")
+            throw ServerBaseException(ExceptionMessage.JWTInvalidFormat)
         val objectMapper = ObjectMapper()
         return OAuth2Authentication(oAuth2Authentication.oAuth2Request, UsernamePasswordAuthenticationToken(
                 UserDetails(

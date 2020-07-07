@@ -1,9 +1,7 @@
 package com.raul.licenta.service
 
-import com.raul.licenta.model.Role
-import com.raul.licenta.model.User
-import com.raul.licenta.model.UserDetails
-import com.raul.licenta.model.UserRole
+import com.raul.licenta.exception.ServerBaseException
+import com.raul.licenta.model.*
 import com.raul.licenta.repository.ImageRepository
 import com.raul.licenta.repository.UserRepository
 import com.raul.licenta.repository.UserRoleRepository
@@ -28,17 +26,16 @@ class UserService(
     }
 
     fun register(user: User) {
-        try {
-            userRepository.save(user)
-        } catch (ex: Exception) {
-            throw Exception("Could not save user")
+        if (userRepository.findByUsername(user.username).isPresent) {
+            throw ServerBaseException(ExceptionMessage.UserAlreadyRegistered)
         }
+        userRepository.save(user)
     }
 
     @Transactional
     fun changeRoles(id: Long, roles: List<Role>) {
         val user = userRepository.findById(id).orElseThrow{
-            Exception("User not found")
+            ServerBaseException(ExceptionMessage.NoUserWithThatId)
         }
         userRoleRepository.deleteByUser(user)
         user.userRoles.clear()
@@ -47,25 +44,25 @@ class UserService(
             user.userRoles.add(userRole)
             userRole.user = user
         }
-        try {
-            userRepository.save(user)
-        } catch (ex: Exception) {
-            throw Exception("Could not save user")
-        }
+        userRepository.save(user)
     }
 
     @Transactional
     fun delete(id: Long) {
+        userRepository.findById(id).orElseThrow{
+            ServerBaseException(ExceptionMessage.NoUserWithThatId)
+        }
         userRepository.deleteById(id)
     }
 
     fun currentUser(): User {
         val principal = SecurityContextHolder.getContext().authentication.principal as? UserDetails ?:
-            throw Exception("No current user")
+            throw ServerBaseException(ExceptionMessage.NoCurrentUser)
         return userRepository.findById(principal.data.id).orElseThrow {
-            Exception("No current user")
+            ServerBaseException(ExceptionMessage.NoCurrentUser)
         }
     }
 
-    fun getOwnerOfImage(id: Long) = imageRepository.findById(id).orElseThrow { Exception("Image not found") }.user
+    fun getOwnerOfImage(id: Long) = imageRepository.findById(id)
+            .orElseThrow{ ServerBaseException(ExceptionMessage.NoImageWithThatId) }.user
 }

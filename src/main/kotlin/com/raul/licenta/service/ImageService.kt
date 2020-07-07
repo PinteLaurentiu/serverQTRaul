@@ -1,10 +1,13 @@
 package com.raul.licenta.service
 
+import com.raul.licenta.exception.ServerBaseException
+import com.raul.licenta.model.ExceptionMessage
 import com.raul.licenta.model.Image
 import com.raul.licenta.repository.ImageRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.security.MessageDigest
+import javax.transaction.Transactional
 
 @Service
 class ImageService(
@@ -21,7 +24,13 @@ class ImageService(
             hexString.append(hex)
         }
         if (image.checksum != hexString.toString()) {
-            throw Exception("Upload failed")
+            throw ServerBaseException(ExceptionMessage.UploadCorrupted)
+        }
+        if (imageRepository.findByChecksum(image.checksum).isPresent) {
+            throw ServerBaseException(ExceptionMessage.ImageExists)
+        }
+        if (imageRepository.findByName(image.name).isPresent) {
+            throw ServerBaseException(ExceptionMessage.ImageWithNameExists)
         }
         imageRepository.save(image)
     }
@@ -32,12 +41,16 @@ class ImageService(
 
     fun getImageData(id: Long): ByteArray {
         val image = imageRepository.findById(id).orElseThrow {
-            Exception("Image not found")
+            ServerBaseException(ExceptionMessage.NoImageWithThatId)
         }
         return image.picture
     }
 
+    @Transactional
     fun delete(id: Long) {
+        imageRepository.findById(id).orElseThrow {
+            ServerBaseException(ExceptionMessage.NoImageWithThatId)
+        }
         imageRepository.deleteById(id)
     }
 }

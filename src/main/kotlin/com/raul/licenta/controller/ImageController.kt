@@ -2,7 +2,6 @@ package com.raul.licenta.controller
 
 import com.raul.licenta.dto.ImageDto
 import com.raul.licenta.mapper.ImageMapper
-import com.raul.licenta.model.Image
 import com.raul.licenta.service.ImageService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*

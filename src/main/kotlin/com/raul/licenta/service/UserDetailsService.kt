@@ -1,5 +1,6 @@
 package com.raul.licenta.service
 
+import com.raul.licenta.exception.ServerBaseException
 import com.raul.licenta.model.*
 import com.raul.licenta.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,9 +18,9 @@ class UserDetailsService(
 
     @Transactional
     override fun loadUserByUsername(username: String?): BaseUserDetails? {
-        val notNullUsername: String = username ?: throw Exception("No user with the provided username was found!")
+        val notNullUsername: String = username ?: throw ServerBaseException(ExceptionMessage.NoUserWithThatUsername)
         val user: User = userRepository.findByUsername(notNullUsername).orElseThrow{
-            Exception("No user with the provided username was found!")
+            throw ServerBaseException(ExceptionMessage.NoUserWithThatUsername)
         }
         return createUserDetails(user)
     }
