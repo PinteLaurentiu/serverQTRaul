@@ -7,6 +7,7 @@ import com.raul.licenta.model.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
 class UserMapper(
@@ -20,7 +21,7 @@ class UserMapper(
                 dto.name,
                 hashSetOf(UserRole(0, Role.Unassigned)),
                 mutableSetOf(),
-                Activation(0, "", true))
+                Activation(0, UUID.randomUUID().toString(), false))
         user.userRoles.first().user = user
         user.activation.user = user
         return user

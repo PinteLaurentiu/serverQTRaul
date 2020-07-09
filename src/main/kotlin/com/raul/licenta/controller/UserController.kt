@@ -24,6 +24,12 @@ class UserController(
         userService.register(userMapper.getUser(dto))
     }
 
+    @GetMapping("/unauthenticated/user/{id}/activate/{uuid}")
+    fun getOwnerOfImage(@PathVariable id: Long, @PathVariable uuid: String) : ResponseEntity<String> {
+        userService.activate(id, uuid)
+        return ResponseEntity("<script type=\"text/javascript\">window.close();</script>", HttpStatus.OK)
+    }
+
     @GetMapping("/admin/user/all")
     fun getAll() : List<UserDto> = userMapper.getUsers(userService.getAllUsers())
 

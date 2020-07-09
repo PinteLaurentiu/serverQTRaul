@@ -28,6 +28,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin") {
         exclude(module = "kotlin-reflect")
     }
+    implementation("javax.mail:mail:1.4.7")
 }
 
 tasks.withType<KotlinCompile> {
